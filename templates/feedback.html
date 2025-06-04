@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback Film - Film Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff94b6 0%, #fad0c4 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .feedback-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        .movie-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .movie-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .movie-details {
+            color: #666;
+            font-size: 1rem;
+        }
+        .rating-stars {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            margin: 1rem 0;
+        }
+        .rating-stars .bi-star:hover,
+        .rating-stars .bi-star-fill {
+            color: #ffd700;
+        }
+        .feedback-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        .feedback-item {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #4CAF50;
+        }
+        .feedback-item .rating {
+            color: #ffd700;
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+        }
+        .feedback-item .comment {
+            color: #444;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .feedback-item .timestamp {
+            color: #888;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .feedback-item .movie-details {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .btn-submit {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            color: white;
+        }
+        .btn-back {
+            background: linear-gradient(45deg, #a1c4fd, #c2e9fb);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(161, 196, 253, 0.4);
+            color: #2c3e50;
+        }
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+        .feedback-count {
+            background: #e9ecef;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="feedback-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Feedback Film</h2>
+                <a href="/" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            </div>
+
+            <!-- Movie Info -->
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-details">
+                    <p class="mb-1"><strong>Tahun:</strong> {{ movie.year }}</p>
+                    {% if movie.main_genre %}
+                    <p class="mb-1"><strong>Genre:</strong> {{ movie.main_genre }}</p>
+                    {% endif %}
+                    {% if movie.runtime and movie.runtime > 0 %}
+                    <p class="mb-1"><strong>Durasi:</strong> {{ movie.runtime | int }} menit</p>
+                    {% endif %}
+                    <p class="mb-0"><strong>Rating:</strong> {{ movie.vote_average | round(1) }}</p>
+                </div>
+            </div>
+
+            <!-- New Feedback Form -->
+            <form id="feedbackForm" method="post" action="/submit_movie_feedback">
+                <input type="hidden" name="movie_title" value="{{ movie.title }}">
+                <div class="mb-3">
+                    <label class="form-label">Rating Film</label>
+                    <div class="rating-stars">
+                        <i class="bi bi-star" data-rating="1"></i>
+                        <i class="bi bi-star" data-rating="2"></i>
+                        <i class="bi bi-star" data-rating="3"></i>
+                        <i class="bi bi-star" data-rating="4"></i>
+                        <i class="bi bi-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" name="rating" id="ratingInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Komentar (Opsional)</label>
+                    <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Bagikan pendapat Anda tentang film ini..."></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="bi bi-send"></i> Kirim Feedback
+                    </button>
+                </div>
+            </form>
+
+            <!-- Existing Feedback -->
+            <div class="mt-4">
+                <div class="feedback-header">
+                    <h4 class="mb-0">Feedback Sebelumnya</h4>
+                    <span class="feedback-count">{{ feedback_list|length }} feedback</span>
+                </div>
+                <div class="feedback-list">
+                    {% if feedback_list %}
+                        {% for feedback in feedback_list %}
+                        <div class="feedback-item">
+                            <div class="rating">
+                                {{ '★' * feedback.rating }}{{ '☆' * (5 - feedback.rating) }}
+                            </div>
+                            {% if feedback.comment %}
+                            <div class="comment">{{ feedback.comment }}</div>
+                            {% endif %}
+                            <div class="timestamp">
+                                <i class="bi bi-clock"></i>
+                                {{ feedback.timestamp.split('T')[0] }} {{ feedback.timestamp.split('T')[1].split('.')[0] }}
+                            </div>
+                            {% if feedback.movie_details %}
+                            <div class="movie-details">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>Tahun:</strong> {{ feedback.movie_details.year }}
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Genre:</strong> {{ feedback.movie_details.genre }}
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <strong>Durasi:</strong> {{ feedback.movie_details.runtime|int }} menit
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Rating:</strong> {{ feedback.movie_details.vote_average|round(1) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted text-center py-3">
+                            Belum ada feedback untuk film ini.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingStars = document.querySelectorAll('.rating-stars i');
+        const ratingInput = document.getElementById('ratingInput');
+        let selectedRating = 0;
+
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                selectedRating = rating;
+                ratingInput.value = rating;
+                
+                // Update star display
+                ratingStars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-rating')) <= rating) {
+                        s.classList.remove('bi-star');
+                        s.classList.add('bi-star-fill');
+                    } else {
+                        s.classList.remove('bi-star-fill');
+                        s.classList.add('bi-star');
+                    }
+                });
+            });
+        });
+
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            if (!selectedRating) {
+                e.preventDefault();
+                alert('Mohon berikan rating terlebih dahulu');
+            }
+        });
+    });
+    </script>
+</body>
+</html> 

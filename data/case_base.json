@@ -1,0 +1,22 @@
+[
+    {
+        "movie": {
+            "title": "Berserk: The Golden Age Arc 2 - The Battle for Doldrey",
+            "main_genre": "Animation",
+            "runtime": 98.0,
+            "vote_average": 7.2,
+            "imdb_id": "tt2358911",
+            "release_date": "2012-06-23",
+            "year": 2012,
+            "overview": "",
+            "genres": "[]",
+            "id": 0
+        },
+        "feedback": {
+            "rating": 4,
+            "comment": "bagus",
+            "timestamp": "2025-06-04T20:39:49.670212"
+        },
+        "timestamp": "2025-06-04T20:39:49.670212"
+    }
+]
